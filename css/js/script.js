@@ -14,7 +14,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle newsletter form submission
     initNewsletterForm();
+
+    // Initialize portfolio visibility
+    initPortfolioVisibility();
 });
+
+// Initialize portfolio visibility
+function initPortfolioVisibility() {
+    const portfolioSection = document.getElementById('portfolio');
+    const portfolioLink = document.querySelector('a[href="#portfolio"]');
+    const allSections = document.querySelectorAll('section');
+    const closeButton = document.querySelector('.close-portfolio');
+
+    // Função para mostrar o portfólio e ocultar outras seções
+    function showPortfolio(e) {
+        if (e) e.preventDefault();
+
+        // Oculta todas as seções exceto o header e o hero
+        allSections.forEach(section => {
+            if (section.id !== 'home' && section.id !== 'portfolio') {
+                section.style.display = 'none';
+            }
+        });
+
+        // Mostra a seção de portfólio com animação
+        portfolioSection.style.display = 'block';
+        setTimeout(() => {
+            portfolioSection.classList.add('visible');
+        }, 10);
+
+        // Scroll suave até o portfólio
+        portfolioSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Função para voltar à visualização normal
+    function hidePortfolio(e) {
+        if (e) e.preventDefault();
+
+        // Inicia a animação de fade out
+        portfolioSection.classList.remove('visible');
+
+        // Após a animação de fade out, oculta o portfólio e mostra as outras seções
+        setTimeout(() => {
+            portfolioSection.style.display = 'none';
+
+            // Mostra todas as seções novamente
+            allSections.forEach(section => {
+                if (section.id !== 'portfolio') {
+                    section.style.display = '';
+                }
+            });
+
+            // Scroll suave para o topo da página
+            document.querySelector('#home').scrollIntoView({ behavior: 'smooth' });
+
+            // Atualiza a URL removendo o hash
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }, 500);
+    }
+
+    // Adiciona event listener para o link do portfólio
+    portfolioLink.addEventListener('click', showPortfolio);
+
+    // Adiciona event listener para o botão de fechar
+    closeButton.addEventListener('click', hidePortfolio);
+
+    // Remove o event listener anterior do botão de fechar
+    closeButton.removeAttribute('onclick');
+
+    // Adiciona event listener para o botão voltar do navegador
+    window.addEventListener('popstate', () => {
+        if (!window.location.hash.includes('portfolio')) {
+            hidePortfolio();
+        }
+    });
+
+    // Verifica se o hash da URL já está apontando para o portfólio
+    if (window.location.hash === '#portfolio') {
+        showPortfolio();
+    }
+}
 
 // Tab functionality
 function initTabs() {
